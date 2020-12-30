@@ -1,14 +1,11 @@
 #include "debug.h"
 #include "helpers.h"
-// #include "printHelpers.h"
 
 #include <Adafruit_NeoPixel.h>
-
 #include <Adafruit_Sensor.h>
 
 #include <i2c_t3.h>
 #include <Adafruit_BNO055_t3.h>
-
 // #include <Wire.h>
 // #include <Adafruit_BNO055.h>
 
@@ -16,7 +13,11 @@
 #include "nRF24L01.h"
 #include <SPI.h>
 
-// #include <Bounce.h>
+// #include <Firmata.h>
+#include <AP_Sync.h> // Include the library
+
+AP_Sync streamer(SerialUSB1); // Create an Object named streamer of type APsync
+
 
 // TODO to try get pose estimation from IMU
 // 1. clip acc values to zero below a certain threshold
@@ -96,7 +97,10 @@ void setup()
   
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
+
   Serial.begin(115200);
+  SerialUSB1.begin(115200);
+  
   delay(1000);
   printf("Starting LED-Suit firmware \n");
 
@@ -140,6 +144,7 @@ void setup()
 
 void loop()
 {
+  
   dt = sinceLastLoop;
   sinceLastLoop = 0;
   double freq = 1000000.0/dt;
@@ -219,6 +224,9 @@ void loop()
     // printf("freq: %f\n", freq);
     debugPose();
     
+
+    
+    streamer.sync("randomRed",random(0,255));
 
   //  printf("xAccel: %f \n", rawAcc.x);
     // printQuaternion(absoluteOrientation);
